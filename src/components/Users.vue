@@ -13,28 +13,30 @@
     </header>
 
     <main class="content">
-      <h1>Manage Item</h1>
-      <button class="new-item">+ New Item</button>
+      <h1>Manage Users</h1>
+      <button class="new-item">+ New User</button>
 
       <table class="item-table">
         <thead>
           <tr>
             <th></th>
             <th>No.</th>
-            <th>Order ID</th>
+            <th>User ID</th>
             <th>Name</th>
-            <th>Quantity</th>
-            <th>Description</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Role</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in items" :key="item.no">
+          <tr v-for="user in users" :key="user.no">
             <td><input type="checkbox" /></td>
-            <td>{{ item.no }}</td>
-            <td>{{ item.orderId }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.description }}</td>
+            <td>{{ user.no }}</td>
+            <td>{{ user.customerId }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.phone }}</td>
+            <td>{{ user.role }}</td>
+            <td>{{ user.address }}</td>
           </tr>
         </tbody>
       </table>
@@ -44,79 +46,87 @@
 
 <script>
 export default {
-  name: 'ManageItem',
+  name: 'ManageUsers',
   data() {
     return {
-      items: [
+      users: [
         {
           no: '01',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          customerId: '#7676',
+          name: 'Darnell Franey',
+          phone: '1-207-979-9193 x551',
+          role: 'ADMIN',
+          address: '123 Elm St, Portland, ME',
         },
         {
           no: '02',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 5,
-          description: 'The Apollotech B340 is an affordable wireless',
+          customerId: '#7676',
+          name: 'Kristin Prosacco',
+          phone: '1-278-982-0937 x926',
+          role: 'WAREHOUSE_MANAGER',
+          address: '456 Oak St, Seattle, WA',
         },
         {
           no: '03',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          customerId: '#7676',
+          name: 'Lucia Legros',
+          phone: '1-413-787-5811 x250',
+          role: 'WAREHOUSE_STAFF',
+          address: '789 Pine St, Boston, MA',
         },
         {
           no: '04',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 2,
-          description: 'The Apollotech B340 is an affordable wireless',
+          customerId: '#7676',
+          name: 'Gretchen Rutherford',
+          phone: '205.649.4681 x88343',
+          role: 'INVENTORY_MANAGER',
+          address: '321 Maple St, Birmingham, AL',
         },
         {
           no: '05',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 10,
-          description: 'The Apollotech B340 is an affordable wireless',
+          customerId: '#7676',
+          name: 'Tomas Donnelly',
+          phone: '939.943.2346 x345',
+          role: 'SYSTEM_ADMINISTRATOR',
+          address: '654 Cedar St, San Francisco, CA',
         },
         {
           no: '06',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 8,
-          description: 'The Apollotech B340 is an affordable wireless',
+          customerId: '#7676',
+          name: 'Sophia Bode',
+          phone: '1-490-499-6107 x0503',
+          role: 'CUSTOMER',
+          address: '987 Birch St, New York, NY',
         },
         {
           no: '07',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          customerId: '#7676',
+          name: 'Sammy Hand',
+          phone: '863-362-2018',
+          role: 'WAREHOUSE_STAFF',
+          address: '135 Spruce St, Tampa, FL',
         },
         {
           no: '08',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 5,
-          description: 'The Apollotech B340 is an affordable wireless',
+          customerId: '#7676',
+          name: 'Howard Armstrong',
+          phone: '743-293-0057',
+          role: 'INVENTORY_MANAGER',
+          address: '246 Palm St, Phoenix, AZ',
         },
         {
           no: '09',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          customerId: '#7676',
+          name: 'Frankie Fahey',
+          phone: '1-829-943-6992',
+          role: 'CUSTOMER',
+          address: '357 Aspen St, Chicago, IL',
         },
       ],
     }
   },
 }
 </script>
-
 <style scoped>
 .manage-item {
   font-family: Arial, sans-serif;
@@ -181,6 +191,3 @@ h1 {
   background-color: #f4f4f4;
 }
 </style>
-
-// In your app.js or main.js file import Vue from 'vue'; import ManageItem from
-'./components/ManageItem.vue'; new Vue({ render: h => h(ManageItem), }).$mount('#app');

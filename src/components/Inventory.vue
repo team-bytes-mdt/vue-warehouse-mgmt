@@ -13,28 +13,26 @@
     </header>
 
     <main class="content">
-      <h1>Manage Item</h1>
-      <button class="new-item">+ New Item</button>
+      <h1>Manage Inventory</h1>
+      <button class="new-item">+ New Inventory</button>
 
       <table class="item-table">
         <thead>
           <tr>
             <th></th>
             <th>No.</th>
-            <th>Order ID</th>
-            <th>Name</th>
-            <th>Quantity</th>
-            <th>Description</th>
+            <th>Inventory ID</th>
+            <th>Location</th>
+            <th>Last Updated Datetime</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in items" :key="item.no">
+          <tr v-for="item in inventories" :key="item.no">
             <td><input type="checkbox" /></td>
             <td>{{ item.no }}</td>
-            <td>{{ item.orderId }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.description }}</td>
+            <td>{{ item.inventoryId }}</td>
+            <td>{{ item.location }}</td>
+            <td>{{ item.lastUpdatedDatetime }}</td>
           </tr>
         </tbody>
       </table>
@@ -44,72 +42,63 @@
 
 <script>
 export default {
-  name: 'ManageItem',
+  name: 'ManageInventory',
   data() {
     return {
-      items: [
+      inventories: [
         {
           no: '01',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          inventoryId: 'INV001',
+          location: 'Warehouse A',
+          lastUpdatedDatetime: '2025-01-01 14:30',
         },
         {
           no: '02',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 5,
-          description: 'The Apollotech B340 is an affordable wireless',
+          inventoryId: 'INV002',
+          location: 'Warehouse B',
+          lastUpdatedDatetime: '2025-01-02 10:15',
         },
         {
           no: '03',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          inventoryId: 'INV003',
+          location: 'Warehouse C',
+          lastUpdatedDatetime: '2025-01-03 08:45',
         },
         {
           no: '04',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 2,
-          description: 'The Apollotech B340 is an affordable wireless',
+          inventoryId: 'INV004',
+          location: 'Warehouse Z',
+          lastUpdatedDatetime: '2025-01-04 16:20',
         },
         {
           no: '05',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 10,
-          description: 'The Apollotech B340 is an affordable wireless',
+          inventoryId: 'INV005',
+          location: 'Warehouse A',
+          lastUpdatedDatetime: '2025-01-05 11:00',
         },
         {
           no: '06',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 8,
-          description: 'The Apollotech B340 is an affordable wireless',
+          inventoryId: 'INV006',
+          location: 'Warehouse B',
+          lastUpdatedDatetime: '2025-01-06 09:10',
         },
         {
           no: '07',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          inventoryId: 'INV007',
+          location: 'Warehouse C',
+          lastUpdatedDatetime: '2025-01-07 12:25',
         },
         {
           no: '08',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 5,
-          description: 'The Apollotech B340 is an affordable wireless',
+          inventoryId: 'INV008',
+          location: 'Warehouse Z',
+          lastUpdatedDatetime: '2025-01-08 15:00',
         },
         {
           no: '09',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          inventoryId: 'INV009',
+          location: 'Warehouse A',
+          lastUpdatedDatetime: '2025-01-09 17:45',
         },
       ],
     }
@@ -181,6 +170,3 @@ h1 {
   background-color: #f4f4f4;
 }
 </style>
-
-// In your app.js or main.js file import Vue from 'vue'; import ManageItem from
-'./components/ManageItem.vue'; new Vue({ render: h => h(ManageItem), }).$mount('#app');

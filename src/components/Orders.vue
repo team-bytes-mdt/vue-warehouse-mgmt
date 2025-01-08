@@ -1,5 +1,5 @@
 <template>
-  <div class="manage-item">
+  <div class="manage-order">
     <header class="header">
       <div class="logo">Warehouse Management System</div>
       <nav class="nav">
@@ -13,28 +13,26 @@
     </header>
 
     <main class="content">
-      <h1>Manage Item</h1>
-      <button class="new-item">+ New Item</button>
+      <h1>Manage Orders</h1>
+      <button class="new-order">+ New Order</button>
 
-      <table class="item-table">
+      <table class="order-table">
         <thead>
           <tr>
             <th></th>
-            <th>No.</th>
             <th>Order ID</th>
-            <th>Name</th>
-            <th>Quantity</th>
-            <th>Description</th>
+            <th>Customer ID</th>
+            <th>Status</th>
+            <th>Created Date</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in items" :key="item.no">
+          <tr v-for="order in orders" :key="order.no">
             <td><input type="checkbox" /></td>
-            <td>{{ item.no }}</td>
-            <td>{{ item.orderId }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.description }}</td>
+            <td>{{ order.orderId }}</td>
+            <td>{{ order.customerId }}</td>
+            <td>{{ order.status }}</td>
+            <td>{{ order.createdDate }}</td>
           </tr>
         </tbody>
       </table>
@@ -44,72 +42,72 @@
 
 <script>
 export default {
-  name: 'ManageItem',
+  name: 'ManageOrder',
   data() {
     return {
-      items: [
+      orders: [
         {
           no: '01',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          orderId: '#1234',
+          customerId: '#5678',
+          status: 'Pending',
+          createdDate: '2025-01-01',
         },
         {
           no: '02',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 5,
-          description: 'The Apollotech B340 is an affordable wireless',
+          orderId: '#1235',
+          customerId: '#5679',
+          status: 'Shipped',
+          createdDate: '2025-01-02',
         },
         {
           no: '03',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          orderId: '#1236',
+          customerId: '#5680',
+          status: 'Delivered',
+          createdDate: '2025-01-03',
         },
         {
           no: '04',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 2,
-          description: 'The Apollotech B340 is an affordable wireless',
+          orderId: '#1237',
+          customerId: '#5681',
+          status: 'Canceled',
+          createdDate: '2025-01-04',
         },
         {
           no: '05',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 10,
-          description: 'The Apollotech B340 is an affordable wireless',
+          orderId: '#1238',
+          customerId: '#5682',
+          status: 'Pending',
+          createdDate: '2025-01-05',
         },
         {
           no: '06',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 8,
-          description: 'The Apollotech B340 is an affordable wireless',
+          orderId: '#1239',
+          customerId: '#5683',
+          status: 'Shipped',
+          createdDate: '2025-01-06',
         },
         {
           no: '07',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          orderId: '#1240',
+          customerId: '#5684',
+          status: 'Delivered',
+          createdDate: '2025-01-07',
         },
         {
           no: '08',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 5,
-          description: 'The Apollotech B340 is an affordable wireless',
+          orderId: '#1241',
+          customerId: '#5685',
+          status: 'Pending',
+          createdDate: '2025-01-08',
         },
         {
           no: '09',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          orderId: '#1242',
+          customerId: '#5686',
+          status: 'Canceled',
+          createdDate: '2025-01-09',
         },
       ],
     }
@@ -118,7 +116,7 @@ export default {
 </script>
 
 <style scoped>
-.manage-item {
+.manage-order {
   font-family: Arial, sans-serif;
   padding: 20px;
 }
@@ -155,7 +153,7 @@ h1 {
   margin-bottom: 20px;
 }
 
-.new-item {
+.new-order {
   background-color: #ff6b35;
   color: #fff;
   border: none;
@@ -165,22 +163,19 @@ h1 {
   margin-bottom: 20px;
 }
 
-.item-table {
+.order-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.item-table th,
-.item-table td {
+.order-table th,
+.order-table td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
 }
 
-.item-table th {
+.order-table th {
   background-color: #f4f4f4;
 }
 </style>
-
-// In your app.js or main.js file import Vue from 'vue'; import ManageItem from
-'./components/ManageItem.vue'; new Vue({ render: h => h(ManageItem), }).$mount('#app');

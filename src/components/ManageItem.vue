@@ -181,6 +181,3 @@ h1 {
   background-color: #f4f4f4;
 }
 </style>
-
-// In your app.js or main.js file import Vue from 'vue'; import ManageItem from
-'./components/ManageItem.vue'; new Vue({ render: h => h(ManageItem), }).$mount('#app');
