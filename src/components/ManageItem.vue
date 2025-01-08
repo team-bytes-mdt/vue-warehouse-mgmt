@@ -5,7 +5,6 @@
       <nav class="nav">
         <a href="/item">Item</a>
         <a href="/inventory">Inventory</a>
-        <a href="/">Customer</a>
         <a href="/order">Orders</a>
         <a href="/">Users</a>
         <a href="#" class="logout">Logout</a>
@@ -14,31 +13,72 @@
 
     <main class="content">
       <h1>Manage Item</h1>
-      <button class="new-item">+ New Item</button>
+      <button class="new-item" @click="openModal((item = null))">+ New Item</button>
 
       <table class="item-table">
         <thead>
           <tr>
             <th></th>
             <th>No.</th>
-            <th>Order ID</th>
             <th>Name</th>
-            <th>Quantity</th>
             <th>Description</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="item in items" :key="item.no">
             <td><input type="checkbox" /></td>
             <td>{{ item.no }}</td>
-            <td>{{ item.orderId }}</td>
             <td>{{ item.name }}</td>
-            <td>{{ item.quantity }}</td>
             <td>{{ item.description }}</td>
+            <td>{{ item.category }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price }}</td>
+            <td>
+              <button @click="openModal(item)">Edit</button>
+            </td>
           </tr>
         </tbody>
       </table>
     </main>
+
+    <!-- Modal -->
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+      <div class="modal">
+        <h2>{{ isEditing ? 'Update New Item' : 'Add New Item' }}</h2>
+        <form @submit.prevent="isEditing ? updateItem() : addItem()">
+          <label for="item-name">Name:</label>
+          <input type="text" id="item-name" v-model="newItem.name" required />
+
+          <label for="item-quantity">Quantity:</label>
+          <input type="number" id="item-quantity" v-model="newItem.quantity" required />
+
+          <label for="item-price">Price:</label>
+          <input type="number" id="item-price" v-model="newItem.price" required />
+
+          <label for="item-category">Category:</label>
+          <select id="item-category" v-model="newItem.category" required>
+            <option value="">Select Category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Food">Food</option>
+          </select>
+
+          <label for="item-description">Description:</label>
+          <textarea id="item-description" v-model="newItem.description" required></textarea>
+
+          <button type="submit" class="submit-btn">
+            {{ isEditing ? 'Update Item' : 'Add Item' }}
+          </button>
+          <button type="button" @click="closeModal" class="cancel-btn">Cancel</button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -50,69 +90,99 @@ export default {
       items: [
         {
           no: '01',
-          orderId: '#7676',
+          category: 'Electronics',
           name: 'Apollotech',
           quantity: 3,
           description: 'The Apollotech B340 is an affordable wireless',
+          price: 200.0,
         },
         {
           no: '02',
-          orderId: '#7676',
+          category: 'Furniture',
           name: 'Apollotech',
           quantity: 5,
           description: 'The Apollotech B340 is an affordable wireless',
+          price: 200.0,
         },
         {
           no: '03',
-          orderId: '#7676',
+          category: 'Accessories',
           name: 'Apollotech',
           quantity: 3,
           description: 'The Apollotech B340 is an affordable wireless',
+          price: 200.0,
         },
         {
           no: '04',
-          orderId: '#7676',
+          category: 'Clothing',
           name: 'Apollotech',
           quantity: 2,
           description: 'The Apollotech B340 is an affordable wireless',
-        },
-        {
-          no: '05',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 10,
-          description: 'The Apollotech B340 is an affordable wireless',
-        },
-        {
-          no: '06',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 8,
-          description: 'The Apollotech B340 is an affordable wireless',
-        },
-        {
-          no: '07',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
-        },
-        {
-          no: '08',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 5,
-          description: 'The Apollotech B340 is an affordable wireless',
-        },
-        {
-          no: '09',
-          orderId: '#7676',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
+          price: 200.0,
         },
       ],
+      newItem: {
+        no: '',
+        name: '',
+        quantity: '',
+        price: '',
+        category: '',
+        description: '',
+      },
+      showModal: false,
+      isEditing: false,
+      editIndex: null,
     }
+  },
+  methods: {
+    openModal(item) {
+      console.log('Opening modal:', item ? 'Edit Item' : 'Add Item') // Debug
+      this.showModal = true
+
+      if (item) {
+        this.isEditing = true
+        this.editIndex = this.items.findIndex((u) => u.no === item.no)
+        console.log('Editing item:', this.editIndex) // Debug
+        this.newItem = { ...item }
+      } else {
+        this.isEditing = false
+        this.editIndex = null
+        console.log('Adding new item') // Debug
+        this.newItem = {
+          no: '',
+          name: '',
+          quantity: '',
+          price: '',
+          category: '',
+          description: '',
+        }
+      }
+    },
+    closeModal() {
+      this.showModal = false
+      this.newItem = { no: '', name: '', quantity: '', price: '', category: '', description: '' } // Reset form
+      this.editIndex = null // Reset edit index
+      this.isEditing = null
+    },
+    addItem() {
+      const newItem = {
+        no: (this.items.length + 1).toString().padStart(2, '0'),
+        name: this.newItem.name,
+        quantity: this.newItem.quantity,
+        price: this.newItem.price,
+        category: this.newItem.category,
+        description: this.newItem.description,
+      }
+
+      this.items.push(newItem)
+      this.closeModal()
+    },
+    updateItem() {
+      if (this.editIndex !== null && this.editIndex >= 0) {
+        this.items[this.editIndex] = { ...this.newItem }
+      }
+      this.closeModal()
+    },
   },
 }
 </script>
@@ -179,5 +249,89 @@ h1 {
 
 .item-table th {
   background-color: #f4f4f4;
+}
+
+.new-item {
+  background-color: #ff6b35;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.item-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.item-table th,
+.item-table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.item-table th {
+  background-color: #f4f4f4;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.modal form div {
+  margin-bottom: 10px;
+}
+
+.modal form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.modal form input,
+.modal form select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.modal form button {
+  margin-right: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.modal form button[type='submit'] {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.modal form button[type='button'] {
+  background-color: #dc3545;
+  color: #fff;
 }
 </style>

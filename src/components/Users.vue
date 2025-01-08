@@ -5,7 +5,6 @@
       <nav class="nav">
         <a href="/item">Item</a>
         <a href="/inventory">Inventory</a>
-        <a href="/">Customer</a>
         <a href="/order">Orders</a>
         <a href="/">Users</a>
         <a href="#" class="logout">Logout</a>
@@ -14,32 +13,66 @@
 
     <main class="content">
       <h1>Manage Users</h1>
-      <button class="new-item">+ New User</button>
+      <button class="new-item" @click="openModal()">+ New User</button>
 
       <table class="item-table">
         <thead>
           <tr>
             <th></th>
             <th>No.</th>
-            <th>User ID</th>
             <th>Name</th>
             <th>Phone</th>
             <th>Address</th>
             <th>Role</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="user in users" :key="user.no">
             <td><input type="checkbox" /></td>
             <td>{{ user.no }}</td>
-            <td>{{ user.customerId }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.phone }}</td>
-            <td>{{ user.role }}</td>
             <td>{{ user.address }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+              <button @click="openModal(user)">Edit</button>
+            </td>
           </tr>
         </tbody>
       </table>
+
+      <!-- Modal Component -->
+      <div v-if="showModal" class="modal-overlay">
+        <div class="modal">
+          <h2>{{ isEditing ? 'Edit User' : 'Add New User' }}</h2>
+          <form @submit.prevent="isEditing ? updateUser() : addUser()">
+            <div>
+              <label for="name">Name:</label>
+              <input type="text" id="name" v-model="newUser.name" required />
+            </div>
+            <div>
+              <label for="phone">Phone:</label>
+              <input type="text" id="phone" v-model="newUser.phone" required />
+            </div>
+            <div>
+              <label for="address">Address:</label>
+              <input type="text" id="address" v-model="newUser.address" required />
+            </div>
+            <div>
+              <label for="role">Role:</label>
+              <select id="role" v-model="newUser.role" required>
+                <option value="WAREHOUSE_MANAGER">Warehouse Manager</option>
+                <option value="WAREHOUSE_STAFF">Warehouse Staff</option>
+                <option value="SYSTEM_ADMINISTRATOR">System Administrator</option>
+              </select>
+            </div>
+            <!-- Ensure the button type is submit -->
+            <button type="submit">{{ isEditing ? 'Update' : 'Save' }}</button>
+            <button type="button" @click="closeModal()">Cancel</button>
+          </form>
+        </div>
+      </div>
     </main>
   </div>
 </template>
@@ -52,15 +85,13 @@ export default {
       users: [
         {
           no: '01',
-          customerId: '#7676',
           name: 'Darnell Franey',
           phone: '1-207-979-9193 x551',
-          role: 'ADMIN',
+          role: 'SYSTEM_ADMINISTRATOR',
           address: '123 Elm St, Portland, ME',
         },
         {
           no: '02',
-          customerId: '#7676',
           name: 'Kristin Prosacco',
           phone: '1-278-982-0937 x926',
           role: 'WAREHOUSE_MANAGER',
@@ -68,65 +99,60 @@ export default {
         },
         {
           no: '03',
-          customerId: '#7676',
           name: 'Lucia Legros',
           phone: '1-413-787-5811 x250',
           role: 'WAREHOUSE_STAFF',
           address: '789 Pine St, Boston, MA',
         },
-        {
-          no: '04',
-          customerId: '#7676',
-          name: 'Gretchen Rutherford',
-          phone: '205.649.4681 x88343',
-          role: 'INVENTORY_MANAGER',
-          address: '321 Maple St, Birmingham, AL',
-        },
-        {
-          no: '05',
-          customerId: '#7676',
-          name: 'Tomas Donnelly',
-          phone: '939.943.2346 x345',
-          role: 'SYSTEM_ADMINISTRATOR',
-          address: '654 Cedar St, San Francisco, CA',
-        },
-        {
-          no: '06',
-          customerId: '#7676',
-          name: 'Sophia Bode',
-          phone: '1-490-499-6107 x0503',
-          role: 'CUSTOMER',
-          address: '987 Birch St, New York, NY',
-        },
-        {
-          no: '07',
-          customerId: '#7676',
-          name: 'Sammy Hand',
-          phone: '863-362-2018',
-          role: 'WAREHOUSE_STAFF',
-          address: '135 Spruce St, Tampa, FL',
-        },
-        {
-          no: '08',
-          customerId: '#7676',
-          name: 'Howard Armstrong',
-          phone: '743-293-0057',
-          role: 'INVENTORY_MANAGER',
-          address: '246 Palm St, Phoenix, AZ',
-        },
-        {
-          no: '09',
-          customerId: '#7676',
-          name: 'Frankie Fahey',
-          phone: '1-829-943-6992',
-          role: 'CUSTOMER',
-          address: '357 Aspen St, Chicago, IL',
-        },
       ],
+      showModal: false,
+      newUser: {
+        no: '',
+        name: '',
+        phone: '',
+        address: '',
+        role: '',
+      },
+      isEditing: false,
+      editIndex: null,
     }
+  },
+  methods: {
+    openModal(user = null) {
+      this.showModal = true
+      if (user) {
+        this.isEditing = true
+        this.editIndex = this.users.findIndex((u) => u.no === user.no)
+        this.newUser = { ...user }
+      } else {
+        this.isEditing = false
+        this.newUser = { no: '', name: '', phone: '', address: '', role: '' }
+      }
+    },
+    closeModal() {
+      this.showModal = false
+      this.newUser = { no: '', name: '', phone: '', address: '', role: '' }
+      this.editIndex = null // Reset edit index
+    },
+    addUser() {
+      const newUser = {
+        ...this.newUser,
+        no: String(this.users.length + 1).padStart(2, '0'),
+      }
+      this.users.push(newUser)
+      this.closeModal()
+    },
+    updateUser() {
+      if (this.editIndex !== null && this.editIndex >= 0) {
+        // Update the user at the specific index
+        this.users[this.editIndex] = { ...this.newUser }
+      }
+      this.closeModal()
+    },
   },
 }
 </script>
+
 <style scoped>
 .manage-item {
   font-family: Arial, sans-serif;
@@ -189,5 +215,63 @@ h1 {
 
 .item-table th {
   background-color: #f4f4f4;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.modal form div {
+  margin-bottom: 10px;
+}
+
+.modal form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.modal form input,
+.modal form select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.modal form button {
+  margin-right: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.modal form button[type='submit'] {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.modal form button[type='button'] {
+  background-color: #dc3545;
+  color: #fff;
 }
 </style>

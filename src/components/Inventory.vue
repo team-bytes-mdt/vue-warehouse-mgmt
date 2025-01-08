@@ -5,7 +5,6 @@
       <nav class="nav">
         <a href="/item">Item</a>
         <a href="/inventory">Inventory</a>
-        <a href="/">Customer</a>
         <a href="/order">Orders</a>
         <a href="/">Users</a>
         <a href="#" class="logout">Logout</a>
@@ -14,7 +13,27 @@
 
     <main class="content">
       <h1>Manage Inventory</h1>
-      <button class="new-item">+ New Inventory</button>
+      <button class="new-item" @click="openModal((item = null))">+ New Inventory</button>
+
+      <!-- Modal Form -->
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal">
+          <span class="close" @click="closeModal">&times;</span>
+          <h2>{{ isEditing ? 'Edit Inventory' : 'New Inventory' }}</h2>
+          <form @submit.prevent="isEditing ? updateInventory() : addInventory()">
+            <label for="inventoryId">Inventory ID:</label>
+            <input type="text" id="inventoryId" v-model="newInventory.inventoryId" required />
+
+            <label for="location">Location:</label>
+            <input type="text" id="location" v-model="newInventory.location" required />
+
+            <button type="submit" class="submit-btn">
+              {{ isEditing ? 'Update Inventory' : 'Save Inventory' }}
+            </button>
+            <button type="button" @click="closeModal()" class="cancel-btn">Cancel</button>
+          </form>
+        </div>
+      </div>
 
       <table class="item-table">
         <thead>
@@ -24,6 +43,7 @@
             <th>Inventory ID</th>
             <th>Location</th>
             <th>Last Updated Datetime</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -33,6 +53,9 @@
             <td>{{ item.inventoryId }}</td>
             <td>{{ item.location }}</td>
             <td>{{ item.lastUpdatedDatetime }}</td>
+            <td>
+              <button @click="openModal(item)">Edit</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -45,6 +68,11 @@ export default {
   name: 'ManageInventory',
   data() {
     return {
+      newInventory: {
+        inventoryId: '',
+        location: '',
+      },
+      isModalOpen: false,
       inventories: [
         {
           no: '01',
@@ -64,44 +92,81 @@ export default {
           location: 'Warehouse C',
           lastUpdatedDatetime: '2025-01-03 08:45',
         },
-        {
-          no: '04',
-          inventoryId: 'INV004',
-          location: 'Warehouse Z',
-          lastUpdatedDatetime: '2025-01-04 16:20',
-        },
-        {
-          no: '05',
-          inventoryId: 'INV005',
-          location: 'Warehouse A',
-          lastUpdatedDatetime: '2025-01-05 11:00',
-        },
-        {
-          no: '06',
-          inventoryId: 'INV006',
-          location: 'Warehouse B',
-          lastUpdatedDatetime: '2025-01-06 09:10',
-        },
-        {
-          no: '07',
-          inventoryId: 'INV007',
-          location: 'Warehouse C',
-          lastUpdatedDatetime: '2025-01-07 12:25',
-        },
-        {
-          no: '08',
-          inventoryId: 'INV008',
-          location: 'Warehouse Z',
-          lastUpdatedDatetime: '2025-01-08 15:00',
-        },
-        {
-          no: '09',
-          inventoryId: 'INV009',
-          location: 'Warehouse A',
-          lastUpdatedDatetime: '2025-01-09 17:45',
-        },
       ],
+      newInventory: {
+        no: '',
+        inventoryId: '',
+        location: '',
+        lastUpdatedDatetime: '',
+      },
+      showModal: false,
+      isEditing: false,
+      editIndex: null,
     }
+  },
+  methods: {
+    openModal(item) {
+      this.showModal = true
+      if (item) {
+        this.isEditing = true
+        this.editIndex = this.inventories.findIndex((u) => u.no === item.no)
+        console.log('Editing item:', this.editIndex) // Debug
+        this.newInventory = { ...item }
+      } else {
+        this.isEditing = false
+        this.editIndex = null
+        console.log('Adding new item') // Debug
+        this.newInventory = {
+          no: '',
+          inventoryId: '',
+          location: '',
+          lastUpdatedDatetime: '',
+        }
+      }
+    },
+    closeModal() {
+      this.showModal = false
+      this.newInventory = {
+        no: '',
+        inventoryId: '',
+        location: '',
+        lastUpdatedDatetime: '',
+      }
+      this.editIndex = null // Reset edit index
+      this.isEditing = null
+    },
+    addInventory() {
+      const now = new Date()
+      const formattedDate =
+        now.getFullYear() +
+        '-' +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        '-' +
+        String(now.getDate()).padStart(2, '0') +
+        ' ' +
+        String(now.getHours()).padStart(2, '0') +
+        ':' +
+        String(now.getMinutes()).padStart(2, '0') +
+        ':' +
+        String(now.getSeconds()).padStart(2, '0')
+
+      const newInventory = {
+        ...this.newInventory,
+        no: (this.inventories.length + 1).toString().padStart(2, '0'),
+        lastUpdatedDatetime: formattedDate,
+      }
+
+      this.inventories.push(newInventory)
+      this.closeModal()
+      this.newInventory.inventoryId = ''
+      this.newInventory.location = ''
+    },
+    updateInventory() {
+      if (this.editIndex !== null && this.editIndex >= 0) {
+        this.inventories[this.editIndex] = { ...this.newInventory }
+      }
+      this.closeModal()
+    },
   },
 }
 </script>
@@ -168,5 +233,64 @@ h1 {
 
 .item-table th {
   background-color: #f4f4f4;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.modal form div {
+  margin-bottom: 10px;
+}
+
+.modal form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.modal form input,
+.modal form select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.modal form button {
+  margin: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.modal form button[type='submit'] {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.modal form button[type='button'] {
+  background-color: #dc3545;
+  color: #fff;
 }
 </style>

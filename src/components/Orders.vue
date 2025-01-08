@@ -5,7 +5,6 @@
       <nav class="nav">
         <a href="/item">Item</a>
         <a href="/inventory">Inventory</a>
-        <a href="/">Customer</a>
         <a href="/order">Orders</a>
         <a href="/">Users</a>
         <a href="#" class="logout">Logout</a>
@@ -14,8 +13,32 @@
 
     <main class="content">
       <h1>Manage Orders</h1>
-      <button class="new-order">+ New Order</button>
+      <button class="new-order" @click="openModal((order = null))">+ New Order</button>
 
+      <!-- Modal Component -->
+      <div v-if="showModal" class="modal-overlay">
+        <div class="modal">
+          <h2>{{ isEditing ? 'Edit Order' : 'Add New Order' }}</h2>
+          <form @submit.prevent="isEditing ? updateOrder() : addOrder()">
+            <label for="orderId">Order ID:</label>
+            <input type="text" id="orderId" v-model="newOrder.orderId" required />
+
+            <label for="customerId">Customer ID:</label>
+            <input type="text" id="customerId" v-model="newOrder.customerId" required />
+
+            <label for="status">Status:</label>
+            <select id="status" v-model="newOrder.status" required>
+              <option value="Pending">Pending</option>
+              <option value="Shipped">Shipped</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Canceled">Canceled</option>
+            </select>
+
+            <button type="submit" class="submit-btn">{{ isEditing ? 'Update' : 'Save' }}</button>
+            <button type="button" @click="closeModal" class="cancel-btn">Cancel</button>
+          </form>
+        </div>
+      </div>
       <table class="order-table">
         <thead>
           <tr>
@@ -24,6 +47,7 @@
             <th>Customer ID</th>
             <th>Status</th>
             <th>Created Date</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -33,6 +57,9 @@
             <td>{{ order.customerId }}</td>
             <td>{{ order.status }}</td>
             <td>{{ order.createdDate }}</td>
+            <td>
+              <button @click="openModal(order)">Edit</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -74,43 +101,76 @@ export default {
           status: 'Canceled',
           createdDate: '2025-01-04',
         },
-        {
-          no: '05',
-          orderId: '#1238',
-          customerId: '#5682',
-          status: 'Pending',
-          createdDate: '2025-01-05',
-        },
-        {
-          no: '06',
-          orderId: '#1239',
-          customerId: '#5683',
-          status: 'Shipped',
-          createdDate: '2025-01-06',
-        },
-        {
-          no: '07',
-          orderId: '#1240',
-          customerId: '#5684',
-          status: 'Delivered',
-          createdDate: '2025-01-07',
-        },
-        {
-          no: '08',
-          orderId: '#1241',
-          customerId: '#5685',
-          status: 'Pending',
-          createdDate: '2025-01-08',
-        },
-        {
-          no: '09',
-          orderId: '#1242',
-          customerId: '#5686',
-          status: 'Canceled',
-          createdDate: '2025-01-09',
-        },
       ],
+      showModal: false,
+      newOrder: {
+        no: '',
+        orderId: '',
+        customerId: '',
+        status: '',
+      },
+      isEditing: false,
+      editIndex: null,
     }
+  },
+  methods: {
+    openModal(order) {
+      this.showModal = true
+      if (order) {
+        this.isEditing = true
+        this.editIndex = this.orders.findIndex((u) => u.no === order.no)
+        this.newOrder = { ...order }
+      } else {
+        this.isEditing = false
+        editIndex: null
+        this.newOrder = { no: '', orderId: '', customerId: '', status: '' }
+      }
+    },
+
+    closeModal() {
+      this.showModal = false
+      this.newOrder = {
+        no: '',
+        orderId: '',
+        customerId: '',
+        status: '',
+      }
+      this.editIndex = null // Reset edit index
+    },
+    addOrder() {
+      const now = new Date() // Define 'now' as the current date and time
+      const formattedDate =
+        now.getFullYear() +
+        '-' +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        '-' +
+        String(now.getDate()).padStart(2, '0') +
+        ' ' +
+        String(now.getHours()).padStart(2, '0') +
+        ':' +
+        String(now.getMinutes()).padStart(2, '0') +
+        ':' +
+        String(now.getSeconds()).padStart(2, '0')
+
+      const newOrder = {
+        ...this.newOrder,
+        no: (this.orders.length + 1).toString().padStart(2, '0'),
+        createdDate: formattedDate, // Add the formatted current date
+      }
+
+      console.log('DATA::', newOrder)
+
+      this.orders.push(newOrder) // Add the new order to the orders list
+      this.closeModal() // Close the modal and reset form state
+    },
+
+    updateOrder() {
+      if (this.editIndex !== null && this.editIndex >= 0) {
+        // Update the user at the specific index
+        this.orders[this.editIndex] = { ...this.newOrder }
+      }
+      this.closeModal()
+    },
   },
 }
 </script>
@@ -177,5 +237,64 @@ h1 {
 
 .order-table th {
   background-color: #f4f4f4;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.modal form div {
+  margin-bottom: 10px;
+}
+
+.modal form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.modal form input,
+.modal form select {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.modal form button {
+  margin: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.modal form button[type='submit'] {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.modal form button[type='button'] {
+  background-color: #dc3545;
+  color: #fff;
 }
 </style>
