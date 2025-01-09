@@ -20,18 +20,19 @@
         <div class="modal">
           <h2>{{ isEditing ? 'Edit Order' : 'Add New Order' }}</h2>
           <form @submit.prevent="isEditing ? updateOrder() : addOrder()">
-            <label for="orderId">Order ID:</label>
-            <input type="text" id="orderId" v-model="newOrder.orderId" required />
-
-            <label for="customerId">Customer ID:</label>
-            <input type="text" id="customerId" v-model="newOrder.customerId" required />
+            <label for="customerName">Customer Name:</label>
+            <input type="text" id="customerName" v-model="newOrder.customerName" required />
+            <label for="customerAddress">Customer Address:</label>
+            <input type="text" id="customerAddress" v-model="newOrder.customerAddress" required />
+            <label for="customerPhoneNumber">Customer Phone Number:</label>
+            <input type="text" id="customerPhoneNumber" v-model="newOrder.customerPhoneNumber" required />
 
             <label for="status">Status:</label>
-            <select id="status" v-model="newOrder.status" required>
-              <option value="Pending">Pending</option>
-              <option value="Shipped">Shipped</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Canceled">Canceled</option>
+            <select id="status" v-model="newOrder.orderStatus" required>
+              <option value="PENDING">Pending</option>
+              <option value="PROCESSING">Processing</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Canceled</option>
             </select>
 
             <button type="submit" class="submit-btn">{{ isEditing ? 'Update' : 'Save' }}</button>
@@ -44,19 +45,23 @@
           <tr>
             <th></th>
             <th>Order ID</th>
-            <th>Customer ID</th>
+            <th>Customer Name</th>
+            <th>Customer Address</th>
+            <th>Customer Phone Number</th>
             <th>Status</th>
             <th>Created Date</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="order in orders" :key="order.no">
+          <tr v-for="order in orders" :key="order.orderId">
             <td><input type="checkbox" /></td>
             <td>{{ order.orderId }}</td>
-            <td>{{ order.customerId }}</td>
-            <td>{{ order.status }}</td>
-            <td>{{ order.createdDate }}</td>
+            <td>{{ order.customerName }}</td>
+            <td>{{ order.customerAddress }}</td>
+            <td>{{ order.customerPhoneNumber }}</td>
+            <td>{{ order.orderStatus }}</td>
+            <td>{{ order.createdAt }}</td>
             <td>
               <button @click="openModal(order)">Edit</button>
             </td>
@@ -68,50 +73,25 @@
 </template>
 
 <script>
+import { useOrderStore } from '@/stores/order'
 export default {
   name: 'ManageOrder',
   data() {
     return {
-      orders: [
-        {
-          no: '01',
-          orderId: '#1234',
-          customerId: '#5678',
-          status: 'Pending',
-          createdDate: '2025-01-01',
-        },
-        {
-          no: '02',
-          orderId: '#1235',
-          customerId: '#5679',
-          status: 'Shipped',
-          createdDate: '2025-01-02',
-        },
-        {
-          no: '03',
-          orderId: '#1236',
-          customerId: '#5680',
-          status: 'Delivered',
-          createdDate: '2025-01-03',
-        },
-        {
-          no: '04',
-          orderId: '#1237',
-          customerId: '#5681',
-          status: 'Canceled',
-          createdDate: '2025-01-04',
-        },
-      ],
       showModal: false,
       newOrder: {
-        no: '',
         orderId: '',
         customerId: '',
-        status: '',
+        orderStatus: '',
       },
       isEditing: false,
       editIndex: null,
     }
+  },
+  computed: {
+    orders() {
+      return this.orderStore.orders
+    },
   },
   methods: {
     openModal(order) {
@@ -122,55 +102,45 @@ export default {
         this.newOrder = { ...order }
       } else {
         this.isEditing = false
-        editIndex: null
-        this.newOrder = { no: '', orderId: '', customerId: '', status: '' }
+        this.editIndex = null
+        this.newOrder = { orderId: '', customerName: '', customerAddress: '', customerPhoneNumber: '', status: '' }
       }
     },
 
     closeModal() {
       this.showModal = false
       this.newOrder = {
-        no: '',
         orderId: '',
-        customerId: '',
-        status: '',
+        customerName: '',
+        customerAddress: '',
+        customerPhoneNumber: '',
+        orderStatus: '',
       }
       this.editIndex = null // Reset edit index
     },
     addOrder() {
-      const now = new Date() // Define 'now' as the current date and time
-      const formattedDate =
-        now.getFullYear() +
-        '-' +
-        String(now.getMonth() + 1).padStart(2, '0') +
-        '-' +
-        String(now.getDate()).padStart(2, '0') +
-        ' ' +
-        String(now.getHours()).padStart(2, '0') +
-        ':' +
-        String(now.getMinutes()).padStart(2, '0') +
-        ':' +
-        String(now.getSeconds()).padStart(2, '0')
-
-      const newOrder = {
-        ...this.newOrder,
-        no: (this.orders.length + 1).toString().padStart(2, '0'),
-        createdDate: formattedDate, // Add the formatted current date
-      }
-
-      console.log('DATA::', newOrder)
-
-      this.orders.push(newOrder) // Add the new order to the orders list
+      this.orderStore.addOrder({ ...this.newOrder })
       this.closeModal() // Close the modal and reset form state
     },
 
     updateOrder() {
       if (this.editIndex !== null && this.editIndex >= 0) {
         // Update the user at the specific index
-        this.orders[this.editIndex] = { ...this.newOrder }
+        this.orderStore.updateOrder(this.editIndex + 1, { ...this.newOrder })
       }
       this.closeModal()
     },
+  },
+
+  setup() {
+    const orderStore = useOrderStore()
+    // Fetch orders
+    orderStore.fetchOrders()
+    return { orderStore }
+  },
+
+  onMounted() {
+    return this.orderStore.fetchOrders()
   },
 }
 </script>
