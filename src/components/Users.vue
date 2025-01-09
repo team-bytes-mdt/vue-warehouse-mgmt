@@ -17,28 +17,28 @@
 
       <table class="item-table">
         <thead>
-          <tr>
-            <th></th>
-            <th>No.</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Address</th>
-            <th>Role</th>
-            <th>Actions</th>
-          </tr>
+        <tr>
+          <th></th>
+          <th>Id.</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Role</th>
+          <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="user in users" :key="user.no">
-            <td><input type="checkbox" /></td>
-            <td>{{ user.no }}</td>
-            <td>{{ user.name }}</td>
-            <td>{{ user.phone }}</td>
-            <td>{{ user.address }}</td>
-            <td>{{ user.role }}</td>
-            <td>
-              <button @click="openModal(user)">Edit</button>
-            </td>
-          </tr>
+        <tr v-for="user in users" :key="user.id">
+          <td><input type="checkbox" /></td>
+          <td>{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.phone }}</td>
+          <td>{{ user.address }}</td>
+          <td>{{ user.role }}</td>
+          <td>
+            <button @click="openModal(user)">Edit</button>
+          </td>
+        </tr>
         </tbody>
       </table>
 
@@ -78,36 +78,14 @@
 </template>
 
 <script>
+import { useUserStore } from '@/stores/user'
 export default {
   name: 'ManageUsers',
   data() {
     return {
-      users: [
-        {
-          no: '01',
-          name: 'Darnell Franey',
-          phone: '1-207-979-9193 x551',
-          role: 'SYSTEM_ADMINISTRATOR',
-          address: '123 Elm St, Portland, ME',
-        },
-        {
-          no: '02',
-          name: 'Kristin Prosacco',
-          phone: '1-278-982-0937 x926',
-          role: 'WAREHOUSE_MANAGER',
-          address: '456 Oak St, Seattle, WA',
-        },
-        {
-          no: '03',
-          name: 'Lucia Legros',
-          phone: '1-413-787-5811 x250',
-          role: 'WAREHOUSE_STAFF',
-          address: '789 Pine St, Boston, MA',
-        },
-      ],
       showModal: false,
       newUser: {
-        no: '',
+        id: '',
         name: '',
         phone: '',
         address: '',
@@ -117,38 +95,48 @@ export default {
       editIndex: null,
     }
   },
+  computed: {
+    users() {
+      return this.userStore.users
+    },
+  },
   methods: {
     openModal(user = null) {
       this.showModal = true
       if (user) {
         this.isEditing = true
-        this.editIndex = this.users.findIndex((u) => u.no === user.no)
+        this.editIndex = this.users.findIndex((u) => u.id === user.id)
         this.newUser = { ...user }
       } else {
         this.isEditing = false
-        this.newUser = { no: '', name: '', phone: '', address: '', role: '' }
+        this.newUser = { id: '', name: '', phone: '', address: '', role: '' }
       }
     },
     closeModal() {
       this.showModal = false
-      this.newUser = { no: '', name: '', phone: '', address: '', role: '' }
+      this.newUser = { id: '', name: '', phone: '', address: '', role: '' }
       this.editIndex = null // Reset edit index
     },
     addUser() {
-      const newUser = {
-        ...this.newUser,
-        no: String(this.users.length + 1).padStart(2, '0'),
-      }
-      this.users.push(newUser)
+      this.userStore.addUser({ ...this.newUser })
       this.closeModal()
     },
     updateUser() {
       if (this.editIndex !== null && this.editIndex >= 0) {
         // Update the user at the specific index
-        this.users[this.editIndex] = { ...this.newUser }
+        this.userStore.updateUser(this.editIndex + 1, { ...this.newUser })
       }
       this.closeModal()
     },
+  },
+  setup() {
+    const userStore = useUserStore()
+    // Fetch users on component mount
+    userStore.fetchUsers()
+    return { userStore }
+  },
+  onMounted() {
+    return this.userStore.fetchUsers()
   },
 }
 </script>
