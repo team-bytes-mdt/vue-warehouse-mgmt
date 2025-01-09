@@ -83,44 +83,11 @@
 </template>
 
 <script>
+import { useItemStore } from '@/stores/item'
 export default {
   name: 'ManageItem',
   data() {
     return {
-      items: [
-        {
-          no: '01',
-          category: 'Electronics',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
-          price: 200.0,
-        },
-        {
-          no: '02',
-          category: 'Furniture',
-          name: 'Apollotech',
-          quantity: 5,
-          description: 'The Apollotech B340 is an affordable wireless',
-          price: 200.0,
-        },
-        {
-          no: '03',
-          category: 'Accessories',
-          name: 'Apollotech',
-          quantity: 3,
-          description: 'The Apollotech B340 is an affordable wireless',
-          price: 200.0,
-        },
-        {
-          no: '04',
-          category: 'Clothing',
-          name: 'Apollotech',
-          quantity: 2,
-          description: 'The Apollotech B340 is an affordable wireless',
-          price: 200.0,
-        },
-      ],
       newItem: {
         no: '',
         name: '',
@@ -133,6 +100,11 @@ export default {
       isEditing: false,
       editIndex: null,
     }
+  },
+  computed: {
+    items() {
+      return this.itemStore.items
+    },
   },
   methods: {
     openModal(item) {
@@ -165,24 +137,20 @@ export default {
       this.isEditing = null
     },
     addItem() {
-      const newItem = {
-        no: (this.items.length + 1).toString().padStart(2, '0'),
-        name: this.newItem.name,
-        quantity: this.newItem.quantity,
-        price: this.newItem.price,
-        category: this.newItem.category,
-        description: this.newItem.description,
-      }
-
-      this.items.push(newItem)
+      this.itemStore.addItem({ ...this.newItem })
       this.closeModal()
     },
+
     updateItem() {
       if (this.editIndex !== null && this.editIndex >= 0) {
-        this.items[this.editIndex] = { ...this.newItem }
+        this.itemStore.updateItem(this.editIndex, { ...this.newItem })
       }
       this.closeModal()
     },
+  },
+  setup() {
+    const itemStore = useItemStore()
+    return { itemStore }
   },
 }
 </script>
