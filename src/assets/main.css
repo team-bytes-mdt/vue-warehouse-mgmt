@@ -15,12 +15,10 @@ body {
   min-height: 100vh;
   /* Ensuring the app covers full viewport height */
   margin: 0 auto;
-  padding: 2rem;
   font-weight: normal;
   display: flex;
   flex-direction: column;
-  /* Default stacking for small screens */
-  justify-content: center;
+
 }
 
 a,
@@ -29,34 +27,4 @@ a,
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
   padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 768px) {
-  #app {
-    padding: 3rem;
-    /* Slightly increasing padding on larger screens */
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    /* Adjusting grid for dynamic column widths */
-    gap: 2rem;
-    /* Add space between grid items */
-    padding: 7rem;
-  }
 }
