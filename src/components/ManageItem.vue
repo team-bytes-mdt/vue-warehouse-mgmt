@@ -25,6 +25,7 @@
             <th>Category</th>
             <th>Quantity</th>
             <th>Price</th>
+            <th>Inventory Id</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -37,6 +38,7 @@
             <td>{{ item.category }}</td>
             <td>{{ item.quantity }}</td>
             <td>{{ item.price }}</td>
+            <td>{{ item.inventoryId }}</td>
             <td>
               <button @click="openModal(item)">Edit</button>
             </td>
@@ -71,6 +73,8 @@
 
           <label for="item-description">Description:</label>
           <textarea id="item-description" v-model="newItem.description" required></textarea>
+          <label for="item-inventory">Inventory Id:</label>
+          <input type="number" id="item-price" v-model="newItem.inventoryId" required />
 
           <button type="submit" class="submit-btn">
             {{ isEditing ? 'Update Item' : 'Add Item' }}
@@ -95,6 +99,7 @@ export default {
         price: '',
         category: '',
         description: '',
+        inventoryId: '',
       },
       showModal: false,
       isEditing: false,
@@ -125,12 +130,21 @@ export default {
           price: '',
           category: '',
           description: '',
+          inventoryId: '',
         }
       }
     },
     closeModal() {
       this.showModal = false
-      this.newItem = { id: '', name: '', quantity: '', price: '', category: '', description: '' } // Reset form
+      this.newItem = {
+        id: '',
+        name: '',
+        quantity: '',
+        price: '',
+        category: '',
+        description: '',
+        inventoryId: '',
+      } // Reset form
       this.editIndex = null // Reset edit index
       this.isEditing = null
     },
@@ -289,7 +303,7 @@ h1 {
 }
 
 .modal form button {
-  margin-right: 10px;
+  margin: 10px;
   padding: 8px 12px;
   border: none;
   border-radius: 3px;
