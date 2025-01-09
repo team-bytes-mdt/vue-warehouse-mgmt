@@ -1,58 +1,63 @@
 import { defineStore } from 'pinia'
+import axios from 'axios'
 
 export const useItemStore = defineStore('item', {
   state: () => ({
-    items: [
-      {
-        no: '01',
-        category: 'Electronics',
-        name: 'Apollotech',
-        quantity: 3,
-        description: 'The Apollotech B340 is an affordable wireless',
-        price: 200.0,
-      },
-      {
-        no: '02',
-        category: 'Furniture',
-        name: 'Apollotech',
-        quantity: 5,
-        description: 'The Apollotech B340 is an affordable wireless',
-        price: 200.0,
-      },
-      {
-        no: '03',
-        category: 'Accessories',
-        name: 'Apollotech',
-        quantity: 3,
-        description: 'The Apollotech B340 is an affordable wireless',
-        price: 200.0,
-      },
-      {
-        no: '04',
-        category: 'Clothing',
-        name: 'Apollotech',
-        quantity: 2,
-        description: 'The Apollotech B340 is an affordable wireless',
-        price: 200.0,
-      },
-    ],
+    items: [],
+    isLoading: false,
+    error: null,
   }),
   actions: {
-    addItem(newItem) {
-      newItem.no = (this.items.length + 1).toString().padStart(2, '0')
-      this.items.push(newItem)
-    },
-    updateItem(index, updatedItem) {
-      if (index !== null && index >= 0) {
-        this.items[index] = { ...updatedItem }
+    async fetchItems() {
+      this.isLoading = true
+      this.error = null
+      try {
+        const response = await axios.get('http://localhost:8080/api/items')
+        console.log(JSON.stringify(response.data))
+        this.items = response.data
+      } catch (err) {
+        this.error = 'Failed to fetch items.'
+        console.error(err)
+      } finally {
+        this.isLoading = false
       }
     },
-    setItems(initialItems) {
-      this.items = initialItems
+    async addItem(newItem) {
+      this.isLoading = true
+      this.error = null
+      try {
+        delete newItem.id
+        const response = await axios.post('http://localhost:8080/api/items', newItem)
+
+        this.items.push(response.data)
+      } catch (err) {
+        this.error = 'Failed to add item.'
+        console.error(err)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async updateItem(itemId, updatedItem) {
+      this.isLoading = true
+      this.error = null
+      try {
+        delete updatedItem.id
+        const response = await axios.put(`http://localhost:8080/api/items/${itemId}`, updatedItem)
+
+        const index = this.items.findIndex((i) => i.id === itemId)
+        if (index !== -1) {
+          this.items[index] = response.data
+        }
+      } catch (err) {
+        this.error = 'Failed to update inventory.'
+        console.error(err)
+      } finally {
+        this.isLoading = false
+      }
     },
   },
   persist: {
-    enabled: true,
+    enabled: false,
     strategies: [
       {
         key: 'itemStore',
