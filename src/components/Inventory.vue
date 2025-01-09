@@ -64,6 +64,8 @@
 </template>
 
 <script>
+import { useInventoryStore } from '../stores/inventory'
+
 export default {
   name: 'ManageInventory',
   data() {
@@ -72,37 +74,15 @@ export default {
         inventoryId: '',
         location: '',
       },
-      isModalOpen: false,
-      inventories: [
-        {
-          no: '01',
-          inventoryId: 'INV001',
-          location: 'Warehouse A',
-          lastUpdatedDatetime: '2025-01-01 14:30',
-        },
-        {
-          no: '02',
-          inventoryId: 'INV002',
-          location: 'Warehouse B',
-          lastUpdatedDatetime: '2025-01-02 10:15',
-        },
-        {
-          no: '03',
-          inventoryId: 'INV003',
-          location: 'Warehouse C',
-          lastUpdatedDatetime: '2025-01-03 08:45',
-        },
-      ],
-      newInventory: {
-        no: '',
-        inventoryId: '',
-        location: '',
-        lastUpdatedDatetime: '',
-      },
       showModal: false,
       isEditing: false,
       editIndex: null,
     }
+  },
+  computed: {
+    inventories() {
+      return this.inventoryStore.inventories
+    },
   },
   methods: {
     openModal(item) {
@@ -110,63 +90,39 @@ export default {
       if (item) {
         this.isEditing = true
         this.editIndex = this.inventories.findIndex((u) => u.no === item.no)
-        console.log('Editing item:', this.editIndex) // Debug
         this.newInventory = { ...item }
       } else {
         this.isEditing = false
         this.editIndex = null
-        console.log('Adding new item') // Debug
         this.newInventory = {
-          no: '',
           inventoryId: '',
           location: '',
-          lastUpdatedDatetime: '',
         }
       }
     },
     closeModal() {
       this.showModal = false
       this.newInventory = {
-        no: '',
         inventoryId: '',
         location: '',
-        lastUpdatedDatetime: '',
       }
-      this.editIndex = null // Reset edit index
-      this.isEditing = null
+      this.isEditing = false
+      this.editIndex = null
     },
     addInventory() {
-      const now = new Date()
-      const formattedDate =
-        now.getFullYear() +
-        '-' +
-        String(now.getMonth() + 1).padStart(2, '0') +
-        '-' +
-        String(now.getDate()).padStart(2, '0') +
-        ' ' +
-        String(now.getHours()).padStart(2, '0') +
-        ':' +
-        String(now.getMinutes()).padStart(2, '0') +
-        ':' +
-        String(now.getSeconds()).padStart(2, '0')
-
-      const newInventory = {
-        ...this.newInventory,
-        no: (this.inventories.length + 1).toString().padStart(2, '0'),
-        lastUpdatedDatetime: formattedDate,
-      }
-
-      this.inventories.push(newInventory)
+      this.inventoryStore.addInventory({ ...this.newInventory })
       this.closeModal()
-      this.newInventory.inventoryId = ''
-      this.newInventory.location = ''
     },
     updateInventory() {
-      if (this.editIndex !== null && this.editIndex >= 0) {
-        this.inventories[this.editIndex] = { ...this.newInventory }
+      if (this.editIndex !== null) {
+        this.inventoryStore.updateInventory(this.editIndex, { ...this.newInventory })
       }
       this.closeModal()
     },
+  },
+  setup() {
+    const inventoryStore = useInventoryStore()
+    return { inventoryStore }
   },
 }
 </script>
