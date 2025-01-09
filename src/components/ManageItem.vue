@@ -29,9 +29,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in items" :key="item.no">
+          <tr v-for="item in items" :key="item.id">
             <td><input type="checkbox" /></td>
-            <td>{{ item.no }}</td>
+            <td>{{ item.id }}</td>
             <td>{{ item.name }}</td>
             <td>{{ item.description }}</td>
             <td>{{ item.category }}</td>
@@ -89,7 +89,7 @@ export default {
   data() {
     return {
       newItem: {
-        no: '',
+        id: '',
         name: '',
         quantity: '',
         price: '',
@@ -113,15 +113,13 @@ export default {
 
       if (item) {
         this.isEditing = true
-        this.editIndex = this.items.findIndex((u) => u.no === item.no)
-        console.log('Editing item:', this.editIndex) // Debug
+        this.editIndex = this.items.findIndex((u) => u.id === item.id)
         this.newItem = { ...item }
       } else {
         this.isEditing = false
         this.editIndex = null
-        console.log('Adding new item') // Debug
         this.newItem = {
-          no: '',
+          id: '',
           name: '',
           quantity: '',
           price: '',
@@ -132,7 +130,7 @@ export default {
     },
     closeModal() {
       this.showModal = false
-      this.newItem = { no: '', name: '', quantity: '', price: '', category: '', description: '' } // Reset form
+      this.newItem = { id: '', name: '', quantity: '', price: '', category: '', description: '' } // Reset form
       this.editIndex = null // Reset edit index
       this.isEditing = null
     },
@@ -143,14 +141,19 @@ export default {
 
     updateItem() {
       if (this.editIndex !== null && this.editIndex >= 0) {
-        this.itemStore.updateItem(this.editIndex, { ...this.newItem })
+        this.itemStore.updateItem(this.editIndex + 1, { ...this.newItem })
       }
       this.closeModal()
     },
   },
   setup() {
     const itemStore = useItemStore()
+    // Fetch all item
+    itemStore.fetchItems()
     return { itemStore }
+  },
+  onMounted() {
+    return this.itemStore.fetchItems()
   },
 }
 </script>
