@@ -1,56 +1,65 @@
 // stores/inventory.js
 import { defineStore } from 'pinia'
+import axios from 'axios'
 
 export const useInventoryStore = defineStore('inventory', {
   state: () => ({
-    inventories: [
-      {
-        no: '01',
-        inventoryId: 'INV001',
-        location: 'Warehouse A',
-        lastUpdatedDatetime: '2025-01-01 14:30',
-      },
-      {
-        no: '02',
-        inventoryId: 'INV002',
-        location: 'Warehouse B',
-        lastUpdatedDatetime: '2025-01-02 10:15',
-      },
-      {
-        no: '03',
-        inventoryId: 'INV003',
-        location: 'Warehouse C',
-        lastUpdatedDatetime: '2025-01-03 08:45',
-      },
-    ],
+    inventories: [],
+    isLoading: false,
+    error: null,
   }),
   actions: {
-    addInventory(newInventory) {
-      const now = new Date()
-      const formattedDate =
-        now.getFullYear() +
-        '-' +
-        String(now.getMonth() + 1).padStart(2, '0') +
-        '-' +
-        String(now.getDate()).padStart(2, '0') +
-        ' ' +
-        String(now.getHours()).padStart(2, '0') +
-        ':' +
-        String(now.getMinutes()).padStart(2, '0') +
-        ':' +
-        String(now.getSeconds()).padStart(2, '0')
-
-      newInventory.no = (this.inventories.length + 1).toString().padStart(2, '0')
-      newInventory.lastUpdatedDatetime = formattedDate
-
-      this.inventories.push(newInventory)
+    async fetchInventories() {
+      this.isLoading = true
+      this.error = null
+      try {
+        const response = await axios.get('http://localhost:8080/api/inventory')
+        console.log(JSON.stringify(response.data))
+        this.inventories = response.data
+      } catch (err) {
+        this.error = 'Failed to fetch inventories rooms.'
+        console.error(err)
+      } finally {
+        this.isLoading = false
+      }
     },
-    updateInventory(index, updatedInventory) {
-      this.inventories[index] = { ...updatedInventory }
+    async addInventory(newInventory) {
+      this.isLoading = true
+      this.error = null
+      try {
+        const response = await axios.post('http://localhost:8080/api/inventory', newInventory)
+
+        this.inventories.push(response.data)
+      } catch (err) {
+        this.error = 'Failed to add inventory.'
+        console.error(err)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async updateInventory(inventoryId, updatedInventory) {
+      this.isLoading = true
+      this.error = null
+      try {
+        const response = await axios.put(
+          `http://localhost:8080/api/inventory/${inventoryId}`,
+          updatedInventory,
+        )
+
+        const index = this.inventories.findIndex((i) => i.id === inventoryId)
+        if (index !== -1) {
+          this.inventories[index] = response.data
+        }
+      } catch (err) {
+        this.error = 'Failed to update inventory.'
+        console.error(err)
+      } finally {
+        this.isLoading = false
+      }
     },
   },
   persist: {
-    enabled: true,
+    enabled: false,
     strategies: [
       {
         key: 'inventoryStore',
