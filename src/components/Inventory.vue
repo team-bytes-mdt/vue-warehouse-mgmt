@@ -12,19 +12,16 @@
     </header>
 
     <main class="content">
-      <h1>Manage Inventory</h1>
-      <button class="new-item" @click="openModal((item = null))">+ New Inventory</button>
+      <h1>Manage Inventory Room</h1>
+      <button class="new-item" @click="openModal((item = null))">+ New Inventory Room</button>
 
       <!-- Modal Form -->
       <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
         <div class="modal">
           <span class="close" @click="closeModal">&times;</span>
-          <h2>{{ isEditing ? 'Edit Inventory' : 'New Inventory' }}</h2>
+          <h2>{{ isEditing ? 'Edit Inventory Room' : 'New Inventory Room' }}</h2>
           <form @submit.prevent="isEditing ? updateInventory() : addInventory()">
-            <label for="inventoryId">Inventory ID:</label>
-            <input type="text" id="inventoryId" v-model="newInventory.inventoryId" required />
-
-            <label for="location">Location:</label>
+            <label for="location">Room Location:</label>
             <input type="text" id="location" v-model="newInventory.location" required />
 
             <button type="submit" class="submit-btn">
@@ -39,20 +36,18 @@
         <thead>
           <tr>
             <th></th>
-            <th>No.</th>
-            <th>Inventory ID</th>
-            <th>Location</th>
+            <th>Inventory Room ID</th>
+            <th>Room Location</th>
             <th>Last Updated Datetime</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in inventories" :key="item.no">
+          <tr v-for="item in inventories" :key="item.id">
             <td><input type="checkbox" /></td>
-            <td>{{ item.no }}</td>
-            <td>{{ item.inventoryId }}</td>
+            <td>{{ item.id }}</td>
             <td>{{ item.location }}</td>
-            <td>{{ item.lastUpdatedDatetime }}</td>
+            <td>{{ item.lastUpdatedDate }}</td>
             <td>
               <button @click="openModal(item)">Edit</button>
             </td>
@@ -64,15 +59,16 @@
 </template>
 
 <script>
-import { useInventoryStore } from '../stores/inventory'
+import { useInventoryStore } from '@/stores/inventory'
 
 export default {
   name: 'ManageInventory',
   data() {
     return {
       newInventory: {
-        inventoryId: '',
+        id: '',
         location: '',
+        lastUpdatedDate: '',
       },
       showModal: false,
       isEditing: false,
@@ -89,22 +85,24 @@ export default {
       this.showModal = true
       if (item) {
         this.isEditing = true
-        this.editIndex = this.inventories.findIndex((u) => u.no === item.no)
+        this.editIndex = this.inventories.findIndex((u) => u.id === item.id)
         this.newInventory = { ...item }
       } else {
         this.isEditing = false
         this.editIndex = null
         this.newInventory = {
-          inventoryId: '',
+          id: '',
           location: '',
+          lastUpdatedDate: '',
         }
       }
     },
     closeModal() {
       this.showModal = false
       this.newInventory = {
-        inventoryId: '',
+        id: '',
         location: '',
+        lastUpdatedDate: '',
       }
       this.isEditing = false
       this.editIndex = null
@@ -115,14 +113,19 @@ export default {
     },
     updateInventory() {
       if (this.editIndex !== null) {
-        this.inventoryStore.updateInventory(this.editIndex, { ...this.newInventory })
+        this.inventoryStore.updateInventory(this.editIndex + 1, { ...this.newInventory })
       }
       this.closeModal()
     },
   },
   setup() {
     const inventoryStore = useInventoryStore()
+    // fetch inventories
+    inventoryStore.fetchInventories()
     return { inventoryStore }
+  },
+  onMounted() {
+    return this.inventoryStore.fetchInventories()
   },
 }
 </script>
