@@ -35,7 +35,6 @@
       <table class="item-table">
         <thead>
           <tr>
-            <th></th>
             <th>Inventory Room ID</th>
             <th>Room Location</th>
             <th>Last Updated Datetime</th>
@@ -44,12 +43,12 @@
         </thead>
         <tbody>
           <tr v-for="item in inventories" :key="item.id">
-            <td><input type="checkbox" /></td>
             <td>{{ item.id }}</td>
             <td>{{ item.location }}</td>
             <td>{{ item.lastUpdatedDate }}</td>
             <td>
               <button @click="openModal(item)">Edit</button>
+              <button @click="deleteInventory(item.id)" class="delete-btn">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -116,6 +115,11 @@ export default {
         this.inventoryStore.updateInventory(this.editIndex + 1, { ...this.newInventory })
       }
       this.closeModal()
+    },
+    deleteInventory(id) {
+      if (confirm('Are you sure you want to delete this inventory?')) {
+        this.inventoryStore.deleteInventory(id)
+      }
     },
   },
   setup() {
