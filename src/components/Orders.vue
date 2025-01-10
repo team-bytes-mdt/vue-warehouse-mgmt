@@ -13,7 +13,7 @@
 
     <main class="content">
       <h1>Manage Orders</h1>
-      <button class="new-order" @click="openModal((order = null))">+ New Order</button>
+      <button class="new-item" @click="openModal((order = null))">+ New Order</button>
 
       <!-- Modal Component -->
       <div v-if="showModal" class="modal-overlay">
@@ -45,7 +45,7 @@
           </form>
         </div>
       </div>
-      <table class="order-table">
+      <table class="item-table">
         <thead>
           <tr>
             <th>Order ID</th>
