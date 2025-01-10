@@ -12,7 +12,6 @@ export const useOrderStore = defineStore('order', {
       this.error = null
       try {
         const response = await axios.get('http://localhost:8080/api/order')
-        console.log(JSON.stringify(response.data))
         this.orders = response.data
       } catch (err) {
         this.error = 'Failed to fetch orders.'
@@ -40,8 +39,8 @@ export const useOrderStore = defineStore('order', {
       this.isLoading = true
       this.error = null
       try {
-        delete updatedOrder.orderId;
-        delete updatedOrder.createdAt;
+        delete updatedOrder.orderId
+        delete updatedOrder.createdAt
         const response = await axios.put(`http://localhost:8080/api/order/${orderId}`, updatedOrder)
         const index = this.orders.findIndex((order) => order.orderId === orderId)
         if (index !== -1) {
@@ -49,6 +48,20 @@ export const useOrderStore = defineStore('order', {
         }
       } catch (err) {
         this.error = 'Failed to update order.'
+        console.error(err)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async deleteOrder(orderId) {
+      this.isLoading = true
+      this.error = null
+      try {
+        await axios.delete(`http://localhost:8080/api/order/${orderId}`)
+        // Remove the order from the orders array
+        this.orders = this.orders.filter((order) => order.orderId !== orderId)
+      } catch (err) {
+        this.error = 'Failed to delete order.'
         console.error(err)
       } finally {
         this.isLoading = false
