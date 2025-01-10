@@ -6,7 +6,7 @@
         <a href="/item">Item</a>
         <a href="/inventory">Inventory</a>
         <a href="/order">Orders</a>
-        <a href="/">Users</a>
+        <a href="/" class="active">Users</a>
         <a href="#" class="logout">Logout</a>
       </nav>
     </header>
@@ -157,55 +157,5 @@ export default {
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid #ddd;
-}
-
-.logo {
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
-.nav a {
-  margin: 0 10px;
-  text-decoration: none;
-  color: #333;
-}
-
-.nav .logout {
-  color: red;
-}
-
-.content {
-  margin-top: 20px;
-}
-
-h1 {
-  font-size: 1.5em;
-  margin-bottom: 20px;
-}
-
-.new-item {
-  background-color: #ff6b35;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-
-.item-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.item-table th,
-.item-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
-.item-table th {
-  background-color: #f4f4f4;
 }
 </style>
