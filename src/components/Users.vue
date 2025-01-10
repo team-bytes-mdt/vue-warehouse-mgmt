@@ -17,28 +17,27 @@
 
       <table class="item-table">
         <thead>
-        <tr>
-          <th></th>
-          <th>Id.</th>
-          <th>Name</th>
-          <th>Phone</th>
-          <th>Address</th>
-          <th>Role</th>
-          <th>Actions</th>
-        </tr>
+          <tr>
+            <th>Id.</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
         </thead>
         <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <td><input type="checkbox" /></td>
-          <td>{{ user.id }}</td>
-          <td>{{ user.name }}</td>
-          <td>{{ user.phone }}</td>
-          <td>{{ user.address }}</td>
-          <td>{{ user.role }}</td>
-          <td>
-            <button @click="openModal(user)">Edit</button>
-          </td>
-        </tr>
+          <tr v-for="user in users" :key="user.id">
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.phone }}</td>
+            <td>{{ user.address }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+              <button @click="openModal(user)">Edit</button>
+              <button @click="deleteUser(user.id)" class="delete-btn">Delete</button>
+            </td>
+          </tr>
         </tbody>
       </table>
 
@@ -128,6 +127,11 @@ export default {
       }
       this.closeModal()
     },
+    deleteUser(userId) {
+      if (confirm('Are you sure you want to delete this user?')) {
+        this.userStore.deleteUser(userId)
+      }
+    },
   },
   setup() {
     const userStore = useUserStore()
@@ -203,63 +207,5 @@ h1 {
 
 .item-table th {
   background-color: #f4f4f4;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal {
-  background: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  width: 300px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.modal h2 {
-  margin-top: 0;
-}
-
-.modal form div {
-  margin-bottom: 10px;
-}
-
-.modal form label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.modal form input,
-.modal form select {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.modal form button {
-  margin-right: 10px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.modal form button[type='submit'] {
-  background-color: #28a745;
-  color: #fff;
-}
-
-.modal form button[type='button'] {
-  background-color: #dc3545;
-  color: #fff;
 }
 </style>

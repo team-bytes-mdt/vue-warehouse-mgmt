@@ -13,7 +13,6 @@ export const useUserStore = defineStore('user', {
       this.error = null
       try {
         const response = await axios.get('http://localhost:8080/api/user')
-        console.log('RESPONSE::' + response.data)
         this.users = response.data
       } catch (err) {
         this.error = 'Failed to fetch users.'
@@ -50,6 +49,20 @@ export const useUserStore = defineStore('user', {
         }
       } catch (err) {
         this.error = 'Failed to update user.'
+        console.error(err)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async deleteUser(userId) {
+      this.isLoading = true
+      this.error = null
+      try {
+        await axios.delete(`http://localhost:8080/api/user/${userId}`)
+        // Remove the order from the users array
+        this.users = this.users.filter((u) => u.id !== userId)
+      } catch (err) {
+        this.error = 'Failed to delete user.'
         console.error(err)
       } finally {
         this.isLoading = false
