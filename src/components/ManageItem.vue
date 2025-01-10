@@ -18,7 +18,6 @@
       <table class="item-table">
         <thead>
           <tr>
-            <th></th>
             <th>No.</th>
             <th>Name</th>
             <th>Description</th>
@@ -31,7 +30,6 @@
         </thead>
         <tbody>
           <tr v-for="item in items" :key="item.id">
-            <td><input type="checkbox" /></td>
             <td>{{ item.id }}</td>
             <td>{{ item.name }}</td>
             <td>{{ item.description }}</td>
@@ -41,6 +39,7 @@
             <td>{{ item.inventoryId }}</td>
             <td>
               <button @click="openModal(item)">Edit</button>
+              <button @click="deleteItem(item.id)" class="delete-btn">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -158,6 +157,11 @@ export default {
         this.itemStore.updateItem(this.editIndex + 1, { ...this.newItem })
       }
       this.closeModal()
+    },
+    deleteItem(id) {
+      if (confirm('Are you sure you want to delete this item?')) {
+        this.itemStore.deleteItem(id)
+      }
     },
   },
   setup() {
