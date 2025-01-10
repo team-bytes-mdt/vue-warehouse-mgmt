@@ -14,7 +14,6 @@ export const useInventoryStore = defineStore('inventory', {
       this.error = null
       try {
         const response = await axios.get('http://localhost:8080/api/inventory')
-        console.log(JSON.stringify(response.data))
         this.inventories = response.data
       } catch (err) {
         this.error = 'Failed to fetch inventories rooms.'
@@ -52,6 +51,20 @@ export const useInventoryStore = defineStore('inventory', {
         }
       } catch (err) {
         this.error = 'Failed to update inventory.'
+        console.error(err)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async deleteInventory(id) {
+      this.isLoading = true
+      this.error = null
+      try {
+        await axios.delete(`http://localhost:8080/api/inventory/${id}`)
+        // Remove the order from the inventories array
+        this.inventories = this.inventories.filter((u) => u.id !== id)
+      } catch (err) {
+        this.error = 'Failed to delete inventory.'
         console.error(err)
       } finally {
         this.isLoading = false

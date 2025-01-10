@@ -13,7 +13,6 @@ export const useItemStore = defineStore('item', {
       this.error = null
       try {
         const response = await axios.get('http://localhost:8080/api/items')
-        console.log(JSON.stringify(response.data))
         this.items = response.data
       } catch (err) {
         this.error = 'Failed to fetch items.'
@@ -50,6 +49,20 @@ export const useItemStore = defineStore('item', {
         }
       } catch (err) {
         this.error = 'Failed to update inventory.'
+        console.error(err)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async deleteItem(itemId) {
+      this.isLoading = true
+      this.error = null
+      try {
+        await axios.delete(`http://localhost:8080/api/items/${itemId}`)
+        // Remove the order from the items array
+        this.items = this.items.filter((u) => u.id !== itemId)
+      } catch (err) {
+        this.error = 'Failed to delete item.'
         console.error(err)
       } finally {
         this.isLoading = false

@@ -5,7 +5,7 @@
       <nav class="nav">
         <a href="/item">Item</a>
         <a href="/inventory">Inventory</a>
-        <a href="/order">Orders</a>
+        <a href="/order" class="active">Orders</a>
         <a href="/">Users</a>
         <a href="#" class="logout">Logout</a>
       </nav>
@@ -13,7 +13,7 @@
 
     <main class="content">
       <h1>Manage Orders</h1>
-      <button class="new-order" @click="openModal((order = null))">+ New Order</button>
+      <button class="new-item" @click="openModal((order = null))">+ New Order</button>
 
       <!-- Modal Component -->
       <div v-if="showModal" class="modal-overlay">
@@ -25,7 +25,12 @@
             <label for="customerAddress">Customer Address:</label>
             <input type="text" id="customerAddress" v-model="newOrder.customerAddress" required />
             <label for="customerPhoneNumber">Customer Phone Number:</label>
-            <input type="text" id="customerPhoneNumber" v-model="newOrder.customerPhoneNumber" required />
+            <input
+              type="text"
+              id="customerPhoneNumber"
+              v-model="newOrder.customerPhoneNumber"
+              required
+            />
 
             <label for="status">Status:</label>
             <select id="status" v-model="newOrder.orderStatus" required>
@@ -40,10 +45,9 @@
           </form>
         </div>
       </div>
-      <table class="order-table">
+      <table class="item-table">
         <thead>
           <tr>
-            <th></th>
             <th>Order ID</th>
             <th>Customer Name</th>
             <th>Customer Address</th>
@@ -55,7 +59,6 @@
         </thead>
         <tbody>
           <tr v-for="order in orders" :key="order.orderId">
-            <td><input type="checkbox" /></td>
             <td>{{ order.orderId }}</td>
             <td>{{ order.customerName }}</td>
             <td>{{ order.customerAddress }}</td>
@@ -64,6 +67,7 @@
             <td>{{ order.createdAt }}</td>
             <td>
               <button @click="openModal(order)">Edit</button>
+              <button @click="deleteOrder(order.orderId)" class="delete-btn">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -103,7 +107,13 @@ export default {
       } else {
         this.isEditing = false
         this.editIndex = null
-        this.newOrder = { orderId: '', customerName: '', customerAddress: '', customerPhoneNumber: '', status: '' }
+        this.newOrder = {
+          orderId: '',
+          customerName: '',
+          customerAddress: '',
+          customerPhoneNumber: '',
+          status: '',
+        }
       }
     },
 
@@ -129,6 +139,11 @@ export default {
         this.orderStore.updateOrder(this.editIndex + 1, { ...this.newOrder })
       }
       this.closeModal()
+    },
+    deleteOrder(orderId) {
+      if (confirm('Are you sure you want to delete this order?')) {
+        this.orderStore.deleteOrder(orderId) // Assumes a deleteOrder method exists in the store
+      }
     },
   },
 
@@ -157,114 +172,5 @@ export default {
   align-items: center;
   padding: 10px 0;
   border-bottom: 1px solid #ddd;
-}
-
-.logo {
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
-.nav a {
-  margin: 0 10px;
-  text-decoration: none;
-  color: #333;
-}
-
-.nav .logout {
-  color: red;
-}
-
-.content {
-  margin-top: 20px;
-}
-
-h1 {
-  font-size: 1.5em;
-  margin-bottom: 20px;
-}
-
-.new-order {
-  background-color: #ff6b35;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-
-.order-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.order-table th,
-.order-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
-.order-table th {
-  background-color: #f4f4f4;
-}
-
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal {
-  background: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  width: 300px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.modal h2 {
-  margin-top: 0;
-}
-
-.modal form div {
-  margin-bottom: 10px;
-}
-
-.modal form label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.modal form input,
-.modal form select {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.modal form button {
-  margin: 10px;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-}
-
-.modal form button[type='submit'] {
-  background-color: #28a745;
-  color: #fff;
-}
-
-.modal form button[type='button'] {
-  background-color: #dc3545;
-  color: #fff;
 }
 </style>
