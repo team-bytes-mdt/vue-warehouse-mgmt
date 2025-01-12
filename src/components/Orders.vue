@@ -1,85 +1,86 @@
 <template>
   <div class="manage-order">
-    <header class="header">
-      <div class="logo">Warehouse Management System</div>
-      <nav class="nav">
-        <a href="/item">Item</a>
-        <a href="/inventory">Inventory</a>
-        <a href="/order" class="active">Orders</a>
-        <a href="/">Users</a>
-        <a href="#" class="logout">Logout</a>
-      </nav>
-    </header>
+
+    <HeaderComponent/>
 
     <main class="content">
-      <h1>Manage Orders</h1>
-      <button class="new-item" @click="openModal((order = null))">+ New Order</button>
+        <div class="flex justify-end w-full items-center">
+            <button class="new-item" @click="openModal((order = null))">+ New Order</button>
+        </div>
 
       <!-- Modal Component -->
       <div v-if="showModal" class="modal-overlay">
-        <div class="modal">
-          <h2>{{ isEditing ? 'Edit Order' : 'Add New Order' }}</h2>
+        <div class="modal-class">
+          <h2 class="text-lg text-center">{{ isEditing ? 'Edit Order' : 'Add New Order' }}</h2>
           <form @submit.prevent="isEditing ? updateOrder() : addOrder()">
-            <label for="customerName">Customer Name:</label>
-            <input type="text" id="customerName" v-model="newOrder.customerName" required />
-            <label for="customerAddress">Customer Address:</label>
-            <input type="text" id="customerAddress" v-model="newOrder.customerAddress" required />
-            <label for="customerPhoneNumber">Customer Phone Number:</label>
-            <input
-              type="text"
-              id="customerPhoneNumber"
-              v-model="newOrder.customerPhoneNumber"
-              required
-            />
-
+            <label class="block" for="customerName">Customer Name:</label>
+            <input class="input"  type="text" id="customerName" v-model="newOrder.customerName" required />
+            <label class="block" for="customerAddress">Customer Address:</label>
+            <input class="input" type="text" id="customerAddress" v-model="newOrder.customerAddress" required />
+            <label class="block" for="customerPhoneNumber">Customer Phone Number:</label>
+            <input type="text" class="input" id="customerPhoneNumber" v-model="newOrder.customerPhoneNumber" required />
             <label for="status">Status:</label>
-            <select id="status" v-model="newOrder.orderStatus" required>
+            <select class="input" id="status" v-model="newOrder.orderStatus" required>
               <option value="PENDING">Pending</option>
               <option value="PROCESSING">Processing</option>
               <option value="COMPLETED">Completed</option>
               <option value="CANCELLED">Canceled</option>
             </select>
-
-            <button type="submit" class="submit-btn">{{ isEditing ? 'Update' : 'Save' }}</button>
-            <button type="button" @click="closeModal" class="cancel-btn">Cancel</button>
+            <div class="flex justify-end mt-5">
+                <div class="space-x-5">
+                    <button  type="submit" class="button-class">{{ isEditing ? 'Update' : 'Save' }}</button>
+                    <button type="button" @click="closeModal" class="button-cancel">Cancel</button>
+                </div>
+            </div>
           </form>
         </div>
       </div>
-      <table class="item-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Customer Name</th>
-            <th>Customer Address</th>
-            <th>Customer Phone Number</th>
-            <th>Status</th>
-            <th>Created Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="order in orders" :key="order.orderId">
-            <td>{{ order.orderId }}</td>
-            <td>{{ order.customerName }}</td>
-            <td>{{ order.customerAddress }}</td>
-            <td>{{ order.customerPhoneNumber }}</td>
-            <td>{{ order.orderStatus }}</td>
-            <td>{{ order.createdAt }}</td>
-            <td>
-              <button @click="openModal(order)">Edit</button>
-              <button @click="deleteOrder(order.orderId)" class="delete-btn">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      
+      <TableContainer title="Manage Order">
+        <table class="item-table">
+            <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Customer Address</th>
+                <th>Customer Phone Number</th>
+                <th>Status</th>
+                <th>Created Date</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="order in orders" :key="order.orderId">
+                <td>{{ order.orderId }}</td>
+                <td>{{ order.customerName }}</td>
+                <td>{{ order.customerAddress }}</td>
+                <td>{{ order.customerPhoneNumber }}</td>
+                <td>{{ order.orderStatus }}</td>
+                <td>{{ order.createdAt }}</td>
+                <td>
+                <button @click="openModal(order)">Edit</button>
+                <button @click="deleteOrder(order.orderId)" class="delete-btn">Delete</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+      </TableContainer>
     </main>
   </div>
 </template>
 
 <script>
 import { useOrderStore } from '@/stores/order'
+import HeaderComponent from '@/components/Header.vue'
+import TableContainer from '@/components/TableContainer.vue'
+
+
 export default {
   name: 'ManageOrder',
+    components: {
+        HeaderComponent,
+        TableContainer
+    },
   data() {
     return {
       showModal: false,
